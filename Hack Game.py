@@ -4,6 +4,7 @@ import os
 import random
 import customtkinter as ctk
 import configparser
+import time
 
 # Global paths
 scanfile_path = os.path.join(r"")  # Belirtilen bir dosya taranabilir
@@ -110,6 +111,12 @@ def open_terminal(client_socket):
             os.system('cls' if os.name == 'nt' else 'clear')
         elif command == "/login":
             open_login_window()
+        elif command == "/exit":
+            terminal_output.insert("end", "Uygulama kapanıyor..")
+            time.sleep(2)
+            terminal_window.quit()
+            terminal_window.destroy()
+            
         else:
             terminal_output.insert("end", f"Komut bulunamadı: {command}\n")
 
