@@ -1,25 +1,21 @@
 import socket
 import threading
-import requests
-import configparser
-import tkinter as tk
-import customtkinter as ctk
-import random
-import time
 import os
-
-
-
-
-
+import random
+import customtkinter as ctk
+import configparser
 
 # Global paths
 scanfile_path = os.path.join(r"")  # Belirtilen bir dosya taranabilir
 gud = os.path.join(r"C:\Users\ASUS\Desktop\Hack-Game\GUD")
 
+# Config parser initialization
 config = configparser.ConfigParser()
 
-# Account creation system
+# Global giriş durumu
+is_logged_in = False  # Giriş yapılmadıysa False, yapıldıysa True
+
+# Hesap oluşturma sistemi
 def create_account_sys():
     create_account_win = ctk.CTk()
     create_account_win.title("Hesap Oluştur")
@@ -61,7 +57,6 @@ def create_account_sys():
     result_label = ctk.CTkLabel(create_account_win, text="")
     result_label.pack(pady=5)
 
-    # Mainloop
     create_account_win.mainloop()
 
 # LUIWINX GUI window
@@ -73,6 +68,8 @@ def open_luiwinx_window():
 
 # Terminal window
 def open_terminal(client_socket):
+    global is_logged_in
+
     terminal_window = ctk.CTk()
     terminal_window.title("CRESOURC Terminal")
     terminal_window.geometry("500x300")
@@ -99,12 +96,15 @@ def open_terminal(client_socket):
     # Command system
     def process_command(command):
         if command == "/LUIWINX":
-            open_luiwinx_window()
+            if not is_logged_in:
+                terminal_output.insert("end", "Hata: Önce giriş yapmalısınız!\n")
+            else:
+                open_luiwinx_window()
         elif command == "/creataccount":
             create_account_sys()
         elif command == "/cls":
             terminal_output.delete("1.0", "end")
-            os.system('Clear')
+            os.system('cls' if os.name == 'nt' else 'clear')
         elif command == "/login":
             open_login_window()
         else:
@@ -130,17 +130,21 @@ def open_terminal(client_socket):
 
 # Login window
 def open_login_window():
+    global is_logged_in
+
     login_window = ctk.CTk()
     login_window.title("Giriş Yap")
     login_window.geometry("300x200")
 
-    # Entry 
+    # Entry fields
     ad_entry = ctk.CTkEntry(login_window, placeholder_text="Ad")
     ad_entry.pack(pady=10)
     gidc_entry = ctk.CTkEntry(login_window, placeholder_text="GIDC")
     gidc_entry.pack(pady=10)
 
     def login():
+        global is_logged_in
+
         ad = ad_entry.get().strip()
         gidc = gidc_entry.get().strip()
         if not ad or not gidc:
@@ -154,19 +158,19 @@ def open_login_window():
                 stored_name = lines[0].split(":")[1].strip()
                 stored_gidc = lines[1].split(":")[1].strip()
                 if ad == stored_name and gidc == stored_gidc:
+                    is_logged_in = True
                     result_label.configure(text="Giriş başarılı!", text_color="green")
                     login_window.destroy()
-                    open_luiwinx_window()  # LUIWINX penceresini aç
                 else:
                     result_label.configure(text="Hatalı giriş bilgisi!", text_color="red")
         else:
             result_label.configure(text="Hesap bulunamadı!", text_color="red")
 
-    # button
+    # Button
     login_button = ctk.CTkButton(login_window, text="Giriş Yap", command=login)
     login_button.pack(pady=10)
 
-    #  label
+    # Label
     result_label = ctk.CTkLabel(login_window, text="")
     result_label.pack(pady=10)
 
