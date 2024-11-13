@@ -15,6 +15,7 @@ config = configparser.ConfigParser()
 # Global giriş durumu
 is_logged_in = False  # Giriş yapılmadıysa False, yapıldıysa True
 
+
 # Hesap oluşturma sistemi
 def create_account_sys():
     create_account_win = ctk.CTk()
@@ -59,12 +60,14 @@ def create_account_sys():
 
     create_account_win.mainloop()
 
+
 # LUIWINX GUI window
 def open_luiwinx_window():
     luiwinx_window = ctk.CTk()
     luiwinx_window.title("LUIWINX Penceresi")
     luiwinx_window.geometry("300x200")
     luiwinx_window.mainloop()
+
 
 # Terminal window
 def open_terminal(client_socket):
@@ -128,6 +131,7 @@ def open_terminal(client_socket):
 
     terminal_window.mainloop()
 
+
 # Login window
 def open_login_window():
     global is_logged_in
@@ -176,6 +180,7 @@ def open_login_window():
 
     login_window.mainloop()
 
+
 # Main lobby
 def main():
     lobi = ctk.CTk()
@@ -216,5 +221,6 @@ def main():
     connect_button.pack(pady=50)
 
     lobi.mainloop()
+
 
 main()
