@@ -9,6 +9,7 @@ import time
 # Global paths
 scanfile_path = os.path.join(r"")  # Belirtilen bir dosya taranabilir
 gud = os.path.join(r"C:\Users\ASUS\Desktop\Hack-Game\GUD")
+logged_in_user_id = None
 
 # Config parser initialization
 config = configparser.ConfigParser()
@@ -63,10 +64,19 @@ def create_account_sys():
 
 
 # LUIWINX GUI window
+
 def open_luiwinx_window():
+    global logged_in_user_id
+
     luiwinx_window = ctk.CTk()
     luiwinx_window.title("LUIWINX Penceresi")
     luiwinx_window.geometry("300x200")
+
+    # Giriş yapılan kullanıcı ID'sini göster
+    if logged_in_user_id:
+        id_label = ctk.CTkLabel(luiwinx_window, text=f"Giriş Yapılan ID: {logged_in_user_id}")
+        id_label.pack(pady=10)
+
     luiwinx_window.mainloop()
 
 
@@ -141,20 +151,21 @@ def open_terminal(client_socket):
 
 # Login window
 def open_login_window():
-    global is_logged_in
+    global is_logged_in, logged_in_user_id
 
     login_window = ctk.CTk()
     login_window.title("Giriş Yap")
     login_window.geometry("300x200")
 
-    # Entry fields
+    # Kullanıcıdan giriş bilgileri alınması için giriş kutuları
     ad_entry = ctk.CTkEntry(login_window, placeholder_text="Ad")
     ad_entry.pack(pady=10)
     gidc_entry = ctk.CTkEntry(login_window, placeholder_text="GIDC")
     gidc_entry.pack(pady=10)
 
+    # Giriş doğrulama fonksiyonu
     def login():
-        global is_logged_in
+        global is_logged_in, logged_in_user_id
 
         ad = ad_entry.get().strip()
         gidc = gidc_entry.get().strip()
@@ -162,6 +173,7 @@ def open_login_window():
             result_label.configure(text="Ad ve GIDC gerekli!", text_color="red")
             return
 
+        # GIDC'ye göre dosya yolu oluştur
         file_path = os.path.join(gud, f"{gidc}.txt")
         if os.path.exists(file_path):
             with open(file_path, "r") as file:
@@ -169,6 +181,7 @@ def open_login_window():
                 stored_name = lines[0].split(":")[1].strip()
                 stored_gidc = lines[1].split(":")[1].strip()
                 if ad == stored_name and gidc == stored_gidc:
+                    logged_in_user_id = lines[2].split(":")[1].strip()  # ID'yi kaydet
                     is_logged_in = True
                     result_label.configure(text="Giriş başarılı!", text_color="green")
                     login_window.destroy()
@@ -177,11 +190,11 @@ def open_login_window():
         else:
             result_label.configure(text="Hesap bulunamadı!", text_color="red")
 
-    # Button
+    # Giriş yap butonu
     login_button = ctk.CTkButton(login_window, text="Giriş Yap", command=login)
     login_button.pack(pady=10)
 
-    # Label
+    # Sonuç etiketi
     result_label = ctk.CTkLabel(login_window, text="")
     result_label.pack(pady=10)
 
